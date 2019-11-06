@@ -8,7 +8,17 @@ ser_baud = 9600
 serial_port = serial.Serial(ser_port, ser_baud, timeout=0)
 
 def ser_received(data):
-    print data
+    ser_pause = True
+    if data.startswith("READ_"):
+        card_id = data.replace("READ_", "")
+        print "USER " + card_id
+        if card_id == "0428F32A845C81":
+            send_command("ON")
+        elif card_id == "042CF32A845C81":
+            send_command("ON_R")
+        else:
+            send_command("OFF")
+    ser_pause = False
 
 def ser_start_reading(ser):
     while True:
@@ -19,8 +29,9 @@ def ser_start_reading(ser):
                 ser_received(received)
 
 def send_command(cmd):
+    send = cmd + '\n'
     ser_pause = True
-    serial_port.write(bytes(cmd))
+    serial_port.write(send.encode('utf-8'))
     ser_pause = False
 
 try:
