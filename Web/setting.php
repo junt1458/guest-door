@@ -14,6 +14,26 @@
         header("Location: ./login.php");
         exit;
     }
+
+    $failed = false;
+    $succeeded = false;
+    $message = "";
+    if(!empty($_POST['user_now']) && !empty($_POST['user_pass']) && !empty($_POST['user_pass2'])) {
+        if($_SESSION['user_pass'] !== $_POST['user_now']) { 
+            $failed = true;
+            $message = "現在のパスワードが異なります！";
+        }
+        if($_POST['user_pass'] !== $_POST['user_pass2']) {
+            $failed = true;
+            $message = "新しいパスワードが異なります！";
+        }
+        if(!$failed) {
+            $sql->renewPass($_POST['user_pass']);
+            $_SESSION['user_pass'] = $_POST['user_pass'];
+            $succeeded = true;
+            $message = "パスワードの変更に成功しました。";
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -74,12 +94,21 @@
 
     <main role="main" class="container">
 
-        <div class="starter-template">
-            <h1>Bootstrap starter template - Setting</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
-        </div>
-
+    <form class="form-signin" method="post" action="./setting.php">
+            <?php if($failed) : ?>
+            <div class="alert alert-danger" role="alert"><?php echo $message; ?></div>
+            <?php elseif($succeeded) : ?>
+            <div class="alert alert-success" role="alert"><?php echo $message; ?></div>
+            <?php endif; ?>
+            <h1 class="h3 mb-3 font-weight-normal">パスワードの変更</h1>
+            <label for="inputNow" class="sr-only">現在のパスワード</label>
+            <input type="password" id="inputNow" name="user_now" a class="form-control" placeholder="現在のパスワード" required autofocus>
+            <label for="inputPassword" class="sr-only">新しいパスワード</label>
+            <input type="password" id="inputPassword" name="user_pass" class="form-control" placeholder="新しいパスワード" required>
+            <label for="inputPassword2" class="sr-only">新しいパスワード(確認)</label>
+            <input type="password" id="inputPassword2" name="user_pass2" class="form-control" placeholder="新しいパスワード(確認)" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">パスワードの変更</button>
+        </form>
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
