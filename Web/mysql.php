@@ -62,5 +62,36 @@ class SQL_Proc {
 
         mysqli_close($link);
     }
+
+    function getUserList() {
+        $user_list = array();
+
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $id = (empty($_SESSION['user_id'])) ? "" : $_SESSION['user_id'];
+        $pass = (empty($new_pass)) ? "" : $new_pass;
+        $id = mysqli_real_escape_string($link, $id);
+        $pass = mysqli_real_escape_string($link, $pass);
+
+        $result = mysqli_query($link, "SELECT user, pass FROM Users ORDER BY id");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        while($row = mysqli_fetch_assoc($result)) {
+            array_push($user_list, $row['user']);
+        }
+
+        mysqli_free_result($result);
+
+        mysqli_close($link);
+
+        return $user_list;
+    }
 }
 ?>

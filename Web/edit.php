@@ -23,7 +23,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Guest Door - Dashboard</title>
+    <title>Guest Door - Edit Permission</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -40,8 +40,8 @@
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active btn-nav">
-                    <a class="nav-link" href="./">ダッシュボード <span class="sr-only">(current)</span></a>
+                <li class="nav-item btn-nav">
+                    <a class="nav-link" href="./">ダッシュボード</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
@@ -52,11 +52,11 @@
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
-                <li class="nav-item btn-nav">
+                <li class="nav-item btn-nav active">
                     <a class="nav-link" href="./user.php">管理</a>
                 </li>
                 <li class="nav-item btn-nav">
-                    <a class="nav-link" href="./setting.php">設定</a>
+                    <a class="nav-link" href="./setting.php">設定 <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
             <ul class="navbar-nav navbar-right">
@@ -68,13 +68,7 @@
     </nav>
 
     <main role="main" class="container">
-
-        <div class="starter-template">
-            <h1>Bootstrap starter template - Dashboard</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
-        </div>
-
+        <h1>Permission Edit</h1>
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

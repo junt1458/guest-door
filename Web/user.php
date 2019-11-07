@@ -14,6 +14,8 @@
         header("Location: ./login.php");
         exit;
     }
+
+    $user_list = $sql->getUserList();
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +32,7 @@
     <link rel="stylesheet" href="style.css?a">
 </head>
 
-<body>
+<body class="block-ovr">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="./">Guest Door</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -52,13 +54,8 @@
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">管理</a>
-                    <div class="dropdown-menu" aria-labelledby="dropdown02">
-                        <a class="dropdown-item" href="./user.php">ユーザー管理 <span class="sr-only">(current)</span></a>
-                        <a class="dropdown-item" href="./key.php">キー管理</a>
-                    </div>
+                <li class="nav-item btn-nav active">
+                    <a class="nav-link" href="./user.php">管理</a>
                 </li>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./setting.php">設定</a>
@@ -73,11 +70,38 @@
     </nav>
 
     <main role="main" class="container">
-
-        <div class="starter-template">
-            <h1>Bootstrap starter template - User</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom fit-space">
+            <h1 class="h2">ユーザー/キー管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <a href="./add.php" class="btn btn-sm btn-outline-secondary">ユーザー作成</a>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ユーザー名</th>
+                        <th>権限の管理</th>
+                        <th>キーの管理</th>
+                        <th>ユーザーの削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for($i = 0; $i < count($user_list); $i++) : ?>
+                    <tr>
+                        <td><?php echo ($i + 1); ?></td>
+                        <td><?php echo $user_list[$i]; ?></td>
+                        <td><a href="./edit.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-primary">編集</a></td>
+                        <td><a href="./key.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-info">管理</a></td>
+                        <td><a href="./del.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-danger">削除</a></td>
+                    </tr>
+                    <?php endfor; ?>
+                </tbody>
+            </table>
         </div>
 
     </main>

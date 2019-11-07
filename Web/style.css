@@ -35,6 +35,10 @@ body {
     background-color: #f5f5f5;
 }
 
+.block-ovr { 
+    display: block!important;
+}
+
 .form-signin {
     width: 100%;
     max-width: 330px;
@@ -66,4 +70,8 @@ body {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+.fit-space { 
+    margin-top: 40px;
 }

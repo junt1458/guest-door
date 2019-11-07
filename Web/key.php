@@ -52,13 +52,8 @@
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">管理</a>
-                    <div class="dropdown-menu" aria-labelledby="dropdown02">
-                        <a class="dropdown-item" href="./user.php">ユーザー管理</a>
-                        <a class="dropdown-item" href="./key.php">キー管理 <span class="sr-only">(current)</span></a>
-                    </div>
+                <li class="nav-item btn-nav">
+                    <a class="nav-link" href="./user.php">管理</a>
                 </li>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./setting.php">設定</a>
