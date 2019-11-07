@@ -7,9 +7,17 @@
 通常の入退室管理システムに加え、スマートフォンからゲストアクセスが可能な機能を追加したものです。
 
 ## Environment
-- Python 2.7.16
-- Raspberry Pi Zero WH
+Hardware
 - Arduino Nano
+- Raspberry Pi Zero WH
+
+Software
+- Python 2.7.16
+- Arduino IDE 1.8.10
+- PHP 7.3.11
+
+Libraries
+- [MFRC522](https://github.com/miguelbalboa/rfid) 1.4.5
 
 ## Copyright 
-Copyright (c) 2019 Junki Tomatsu All rights reserved.
+Copyright (c) 2019 Junki Tomatsu
