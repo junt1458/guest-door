@@ -14,6 +14,20 @@
         header("Location: ./login.php");
         exit;
     }
+
+    if($sql->getLevel() < 3) {
+        header("Location: ./");
+        exit;
+    }
+
+    $filter = (empty($_GET['filter'])) ? 0 : intval($_GET['filter']);
+    $title = array(
+        0=>"全ての",
+        1=>"入退室",
+        2=>"キー管理"
+    );
+
+    $log_list = $sql->getLogs($filter);
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +44,7 @@
     <link rel="stylesheet" href="style.css?a">
 </head>
 
-<body>
+<body class="block-ovr">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="./">Guest Door</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -43,18 +57,22 @@
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./">ダッシュボード</a>
                 </li>
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">ログ <span class="sr-only">(current)</span></a>
+                <?php if($sql->getLevel() > 2) : ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="dropdown01" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">ログ</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" href="./log.php?filter=0">全てのログ</a>
                         <a class="dropdown-item" href="./log.php?filter=1">入退室ログ</a>
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
+                <?php endif; ?>
+                <?php if($sql->getLevel() != 0) : ?>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./user.php">管理</a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./setting.php">設定</a>
                 </li>
@@ -68,11 +86,33 @@
     </nav>
 
     <main role="main" class="container">
-
-        <div class="starter-template">
-            <h1>Bootstrap starter template - Log</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom fit-space">
+            <h1 class="h2"><?php echo $title[$filter]; ?>ログ</h1>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>日時</th>
+                        <th>ユーザー</th>
+                        <th>動作</th>
+                        <th>キー名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for($i = 0; $i < count($log_list); $i++) : ?>
+                    <tr>
+                        <td><?php echo ($i + 1); ?></td>
+                        <td><?php echo $log_list[$i]["date"]; ?></td>
+                        <td><?php echo $log_list[$i]["user"]; ?></td>
+                        <td><?php echo $log_list[$i]["action"]; ?></td>
+                        <td><?php echo $log_list[$i]["key"]; ?></td>
+                    </tr>
+                    <?php endfor; ?>
+                </tbody>
+            </table>
         </div>
 
     </main>

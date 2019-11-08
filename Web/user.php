@@ -15,6 +15,14 @@
         exit;
     }
 
+    if($sql->getLevel() == 0) {
+        header("Location: ./");
+        exit;
+    } else if($sql->getLevel() == 1 || $sql->getLevel() == 3) {
+        header("Location: ./key.php");
+        exit;
+    }
+
     $user_list = $sql->getUserList();
 ?>
 
@@ -30,6 +38,15 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css?a">
+
+    <script>
+        function check_delete(user_id) {
+            var res = confirm("ユーザー: " + user_id + " を削除しますか？");
+            if(res) {
+                location.href = "./del.php?id=" + user_id;
+            }
+        }
+    </script>
 </head>
 
 <body class="block-ovr">
@@ -45,6 +62,7 @@
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./">ダッシュボード</a>
                 </li>
+                <?php if($sql->getLevel() > 2) : ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">ログ</a>
@@ -54,9 +72,12 @@
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
+                <?php endif; ?>
+                <?php if($sql->getLevel() != 0) : ?>
                 <li class="nav-item btn-nav active">
                     <a class="nav-link" href="./user.php">管理</a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./setting.php">設定</a>
                 </li>
@@ -95,9 +116,9 @@
                     <tr>
                         <td><?php echo ($i + 1); ?></td>
                         <td><?php echo $user_list[$i]; ?></td>
-                        <td><a href="./edit.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-primary">編集</a></td>
-                        <td><a href="./key.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-info">管理</a></td>
-                        <td><a href="./del.php?id=<?php $user_list[$i]; ?>" class="btn btn-sm btn-danger">削除</a></td>
+                        <td><a href="./edit.php?id=<?php echo $user_list[$i]; ?>" class="btn btn-sm btn-primary">編集</a></td>
+                        <td><a href="./key.php?id=<?php echo $user_list[$i]; ?>" class="btn btn-sm btn-info">管理</a></td>
+                        <td><a href="javascript:void(0);" class="btn btn-sm btn-danger" onClick="check_delete('<?php echo $user_list[$i]; ?>')">削除</a></td>
                     </tr>
                     <?php endfor; ?>
                 </tbody>

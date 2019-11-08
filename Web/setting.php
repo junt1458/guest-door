@@ -63,6 +63,7 @@
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./">ダッシュボード</a>
                 </li>
+                <?php if($sql->getLevel() > 2) : ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">ログ</a>
@@ -72,9 +73,12 @@
                         <a class="dropdown-item" href="./log.php?filter=2">キー管理ログ</a>
                     </div>
                 </li>
+                <?php endif; ?>
+                <?php if($sql->getLevel() != 0) : ?>
                 <li class="nav-item btn-nav">
                     <a class="nav-link" href="./user.php">管理</a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item btn-nav active">
                     <a class="nav-link" href="./setting.php">設定 <span class="sr-only">(current)</span></a>
                 </li>
