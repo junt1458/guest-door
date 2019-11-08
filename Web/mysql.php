@@ -72,6 +72,38 @@ class SQL_Proc {
         return $level;
     }
 
+    function addUser($user_id, $pass, $permission) {
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $id = (empty($_SESSION['user_id'])) ? "" : $_SESSION['user_id'];
+        $pass = (empty($_SESSION['user_pass'])) ? "" : $_SESSION['user_pass'];
+        $id = mysqli_real_escape_string($link, $id);
+        $pass = mysqli_real_escape_string($link, $pass);
+
+        $result = mysqli_query($link, "SELECT user, pass FROM Users WHERE user='" . $user_id . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        if(mysqli_num_rows($result) != 0) {
+            mysqli_close($link);
+            return 0;
+        }
+        $result = mysqli_query($link, "INSERT INTO Users (user, pass, permission) VALUES ('" . $user_id . "', SHA1('" . $pass . "'), " . $permission . ");");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        mysqli_close($link);
+        return -1;
+    }
+
     function getUserLevel($user_id) {
         $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
         if(mysqli_connect_errno()) {

@@ -29,6 +29,9 @@
 
     if(!empty($_POST['permission'])) {
         $new_perm = intval($_POST['permission']) - 1;
+        if($new_perm < 0) {
+            $new_perm = 0;
+        }
         if($new_perm > 4) {
             $new_perm = 4;
         }

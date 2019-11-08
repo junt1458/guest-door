@@ -25,6 +25,17 @@
     if(empty($_GET['id'])) {
         $_GET['id'] = $_SESSION['user_id'];
     }
+
+    $key_list = array();
+    $data = array(
+        "name"=>"",
+        "created_at"=>"",
+        "use_count"=>1,
+        "active_until"=>"",
+        "type"=>"physical",
+        "status"=>"Active"
+    );
+    array_push($key_list, $data);
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +52,7 @@
     <link rel="stylesheet" href="style.css?a">
 </head>
 
-<body>
+<body class="block-ovr">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="./">Guest Door</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -84,11 +95,46 @@
 
     <main role="main" class="container">
 
-        <div class="starter-template">
-            <h1>Bootstrap starter template - Key</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom fit-space">
+            <h1 class="h2">キー管理</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                    <a href="./kadd.php" class="btn btn-sm btn-outline-secondary">キー作成</a>
+                </div>
+            </div>
         </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>キー名</th>
+                        <th>作成日</th>
+                        <th>使用可能回数</th>
+                        <th>有効期限</th>
+                        <th>種類</th>
+                        <th>キーの状態</th>
+                        <th>キーの削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for($i = 0; $i < count($key_list); $i++) : ?>
+                    <tr>
+                        <td><?php echo ($i + 1); ?></td>
+                        <td>Key1</td>
+                        <td>2019/11/11 11:11:11</td>
+                        <td>1</td>
+                        <td>2019/11/11 11:11:11</td>
+                        <td>物理</td>
+                        <td>使用中</td>
+                        <td><a href="javascript:void(0);" class="btn btn-sm btn-danger" onClick="check_delete('<?php echo $key_list[$i]["name"]; ?>')">削除</a></td>
+                    </tr>
+                    <?php endfor; ?>
+                </tbody>
+            </table>
+        </div>
+
 
     </main>
 

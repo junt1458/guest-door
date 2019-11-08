@@ -93,7 +93,7 @@
     <main role="main" class="container">
         <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom fit-space">
-            <h1 class="h2">ユーザー/キー管理</h1>
+            <h1 class="h2">ユーザー管理</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
                     <a href="./add.php" class="btn btn-sm btn-outline-secondary">ユーザー作成</a>
