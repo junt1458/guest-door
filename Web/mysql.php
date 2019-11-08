@@ -72,6 +72,33 @@ class SQL_Proc {
         return $level;
     }
 
+    function getUserLevel($user_id) {
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $id = mysqli_real_escape_string($link, $user_id);
+
+        $result = mysqli_query($link, "SELECT permission FROM Users WHERE user='" . $id . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        $level = 0;
+
+        while($row = mysqli_fetch_assoc($result)) {
+            $level = intval($row['permission']);
+        }
+
+        mysqli_free_result($result);
+
+        mysqli_close($link);
+        return $level;
+    }
+
     function renewPass($new_pass) {
         $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
         if(mysqli_connect_errno()) {
@@ -103,6 +130,26 @@ class SQL_Proc {
         }
 
         $result = mysqli_query($link, "DELETE FROM Users WHERE user='" . $user_id . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        mysqli_free_result($result);
+
+        mysqli_close($link);
+    }
+
+    function updatePermission($user_id, $permission) {
+        $user_list = array();
+
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $result = mysqli_query($link, "UPDATE Users SET permission=" . $permission . " WHERE user='" . $user_id . "'");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
             exit;
