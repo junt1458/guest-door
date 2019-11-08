@@ -26,16 +26,7 @@
         $_GET['id'] = $_SESSION['user_id'];
     }
 
-    $key_list = array();
-    $data = array(
-        "name"=>"",
-        "created_at"=>"",
-        "use_count"=>1,
-        "active_until"=>"",
-        "type"=>"physical",
-        "status"=>"Active"
-    );
-    array_push($key_list, $data);
+    $key_list = $sql->getKeyList($_GET['id']);
 ?>
 
 <!DOCTYPE html>
@@ -50,6 +41,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css?a">
+    <script>
+        function check_delete(user, key_id) {
+            var res = confirm("キー: " + key_id + " を削除しますか？");
+            if(res) {
+                location.href = "./kdel.php?key_id=" + key_id + "&id=" + user;
+            }
+        }
+    </script>
 </head>
 
 <body class="block-ovr">
@@ -100,7 +99,7 @@
             <h1 class="h2">キー管理</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group mr-2">
-                    <a href="./kadd.php" class="btn btn-sm btn-outline-secondary">キー作成</a>
+                    <a href="./kadd.php?id=<?php echo $_GET['id']; ?>" class="btn btn-sm btn-outline-secondary">キー作成</a>
                 </div>
             </div>
         </div>
@@ -122,13 +121,13 @@
                     <?php for($i = 0; $i < count($key_list); $i++) : ?>
                     <tr>
                         <td><?php echo ($i + 1); ?></td>
-                        <td>Key1</td>
-                        <td>2019/11/11 11:11:11</td>
-                        <td>1</td>
-                        <td>2019/11/11 11:11:11</td>
-                        <td>物理</td>
-                        <td>使用中</td>
-                        <td><a href="javascript:void(0);" class="btn btn-sm btn-danger" onClick="check_delete('<?php echo $key_list[$i]["name"]; ?>')">削除</a></td>
+                        <td><?php echo $key_list[$i]["name"]; ?></td>
+                        <td><?php echo $key_list[$i]["created_at"]; ?></td>
+                        <td><?php echo $key_list[$i]["use_count"]; ?></td>
+                        <td><?php echo $key_list[$i]["active_until"]; ?></td>
+                        <td><?php echo $key_list[$i]["type"]; ?></td>
+                        <td><?php echo $key_list[$i]["status"]; ?></td>
+                        <td><a href="javascript:void(0);" class="btn btn-sm btn-danger" onClick="check_delete('<?php echo $_GET['id']; ?>', '<?php echo $key_list[$i]["name"]; ?>')">削除</a></td>
                     </tr>
                     <?php endfor; ?>
                 </tbody>

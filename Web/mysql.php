@@ -161,7 +161,27 @@ class SQL_Proc {
             exit;
         }
 
-        $result = mysqli_query($link, "DELETE FROM Users WHERE user='" . $user_id . "'");
+        $result = mysqli_query($link, "DELETE FROM Users WHERE user='" . mysqli_real_escape_string($link, $user_id) . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        mysqli_free_result($result);
+
+        mysqli_close($link);
+    }
+
+    function deleteKey($user_id, $key_id) {
+        $user_list = array();
+
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $result = mysqli_query($link, "DELETE FROM App_Keys WHERE user='" . mysqli_real_escape_string($link, $user_id) . "' and key_name='" . mysqli_real_escape_string($link, $key_id) . "'");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
             exit;
@@ -181,7 +201,7 @@ class SQL_Proc {
             exit;
         }
 
-        $result = mysqli_query($link, "UPDATE Users SET permission=" . $permission . " WHERE user='" . $user_id . "'");
+        $result = mysqli_query($link, "UPDATE Users SET permission=" . mysqli_real_escape_string($link, $permission) . " WHERE user='" . mysqli_real_escape_string($link, $user_id) . "'");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
             exit;
@@ -201,11 +221,6 @@ class SQL_Proc {
             exit;
         }
 
-        $id = (empty($_SESSION['user_id'])) ? "" : $_SESSION['user_id'];
-        $pass = (empty($new_pass)) ? "" : $new_pass;
-        $id = mysqli_real_escape_string($link, $id);
-        $pass = mysqli_real_escape_string($link, $pass);
-
         $result = mysqli_query($link, "SELECT user, pass FROM Users ORDER BY id");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
@@ -221,6 +236,56 @@ class SQL_Proc {
         mysqli_close($link);
 
         return $user_list;
+    }
+
+    function getKeyList($user_id) {
+        date_default_timezone_set('Asia/Tokyo');
+        $key_list = array();
+    
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $id = mysqli_real_escape_string($link, $user_id);
+
+        $result = mysqli_query($link, "SELECT * FROM App_Keys WHERE user='" . $id . "' ORDER BY id");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        while($row = mysqli_fetch_assoc($result)) {
+            $status = "使用可能";
+            if($row['paused']) {
+                $status = "停止中";
+            }
+            if($row['use_count'] <= 0 && $row['use_count'] != -1) {
+                $status = "無効";
+            }
+            if(strtotime($row['active_until']) < time()) {
+                $status = "無効";
+            }
+            if($row['using_key']) {
+                $status = "使用中";
+            }
+            $data = array(
+                "name"=>$row['key_name'],
+                "created_at"=>$row['created_at'],
+                "use_count"=>(($row['use_count'] == -1) ? "無制限" : $row['use_count']),
+                "active_until"=>$row['active_until'],
+                "type"=>(($row['key_type'] == 0) ? "物理キー" : "仮想キー"),
+                "status"=>$status
+            );
+            array_push($key_list, $data);
+        }
+
+        mysqli_free_result($result);
+
+        mysqli_close($link);
+
+        return $key_list;
     }
 
     const action_str = array(
