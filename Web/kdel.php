@@ -29,5 +29,5 @@
 
     $sql->deleteKey($_GET['id'], $_GET['key_id']);
 
-    header("Location: ./key.php");
+    header("Location: ./key.php?id=" . $_GET['id']);
 ?>

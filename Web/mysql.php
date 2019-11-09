@@ -152,6 +152,47 @@ class SQL_Proc {
         mysqli_close($link);
     }
 
+    function addKey($user_id, $key_id, $use_count, $key_name, $active_until, $key_type) {
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $user = mysqli_real_escape_string($link, $user_id);
+        $key_i = mysqli_real_escape_string($link, $key_id);
+        $use_c = mysqli_real_escape_string($link, $use_count);
+        $key_n = mysqli_real_escape_string($link, $key_name);
+        $acitve_u = mysqli_real_escape_string($link, $active_until);
+        $key_type = mysqli_real_escape_string($link, $key_type);
+
+        $result = mysqli_query($link, "SELECT * FROM App_Keys WHERE user='" . $user . "' and key_name = '" . $key_n . "';");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        if(mysqli_num_rows($result) != 0) {
+            mysqli_close($link);
+            return 0;
+        }
+
+        $result = mysqli_query($link, "INSERT INTO App_Keys (key_id, user, use_count, key_name, key_type, active_until, paused, using_key) VALUES ('" . $key_i . "', '" . $user . "', " . $use_c . ", '" . $key_n . "', " . $key_type . ", '" . $acitve_u . "', false, false);");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        $result = mysqli_query($link, "INSERT INTO Logs (user, action, key_name) VALUES ('" . mysqli_real_escape_string($link, $_SESSION['user_id']) . "', 2, '" . $user . "-" . $key_n . "');");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        mysqli_close($link);
+        return -1;
+    }
+
     function deleteUser($user_id) {
         $user_list = array();
 
@@ -181,12 +222,19 @@ class SQL_Proc {
             exit;
         }
 
-        $result = mysqli_query($link, "DELETE FROM App_Keys WHERE user='" . mysqli_real_escape_string($link, $user_id) . "' and key_name='" . mysqli_real_escape_string($link, $key_id) . "'");
+        $user = mysqli_real_escape_string($link, $user_id);
+        $key = mysqli_real_escape_string($link, $key_id);
+        $result = mysqli_query($link, "DELETE FROM App_Keys WHERE user='" . $user . "' and key_name='" . $key . "'");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
             exit;
         }
 
+        $result = mysqli_query($link, "INSERT INTO Logs (user, action, key_name) VALUES ('" . mysqli_real_escape_string($link, $_SESSION['user_id']) . "', 3, '" . $user . "-" . $key . "');");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
         mysqli_free_result($result);
 
         mysqli_close($link);
