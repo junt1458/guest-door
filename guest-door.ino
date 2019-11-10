@@ -9,8 +9,8 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 void setup() {
   pinMode(5, OUTPUT);
   pinMode(6, OUTPUT);
-  pinMode(7, INPUT);
-  pinMode(8, INPUT);
+  pinMode(3, INPUT);
+  pinMode(4, INPUT);
   Serial.begin(9600);
   while (!Serial);
   SPI.begin();
@@ -48,14 +48,14 @@ void loop() {
   }
 
   if(closing) {
-    //扉閉確認用スイッチ(D7)の入力確認
-    if(digitalRead(7) == HIGH) {
+    //扉閉確認用スイッチ(D3)の入力確認
+    if(digitalRead(3) == HIGH) {
       digitalWrite(5, LOW);
       digitalWrite(6, LOW);
     }
   } else {
-    //扉開確認用スイッチ(D8)の入力確認
-    if(digitalRead(8) == HIGH) {
+    //扉開確認用スイッチ(D4)の入力確認
+    if(digitalRead(4) == HIGH) {
       digitalWrite(5, LOW);
       digitalWrite(6, LOW);
     }
