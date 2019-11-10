@@ -27,10 +27,10 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css?a">
+    <link rel="stylesheet" href="style.css?t=<?php echo time(); ?>">
 </head>
 
-<body>
+<body class="block-ovr ">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="./">Guest Door</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
@@ -73,10 +73,16 @@
 
     <main role="main" class="container">
 
-        <div class="starter-template">
-            <h1>Bootstrap starter template - Dashboard</h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
+        <div class="key_list">
+            <div class="key_detail">
+                test
+            </div>
+            <div class="key_detail">
+                test
+            </div>
+            <div class="key_detail">
+                test
+            </div>
         </div>
 
     </main>
