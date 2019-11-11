@@ -1,6 +1,19 @@
 import threading
 import serial
 import time
+import MySQLdb
+
+connection = MySQLdb.connect(
+    host='127.0.0.1',
+    user='root',
+    passwd='TEST_PASSWD',
+    db='guest_door'
+)
+
+cursor = connection.cursor()
+
+# do something
+# connection.commit() <-- You need to execute this to save changes.
 
 ser_pause = False
 ser_port = "/dev/serial0"
@@ -11,13 +24,10 @@ def ser_received(data):
     ser_pause = True
     if data.startswith("READ_"):
         card_id = data.replace("READ_", "")
-        print "USER " + card_id
-        if card_id == "0428F32A845C81":
-            send_command("ON")
-        elif card_id == "042CF32A845C81":
-            send_command("ON_R")
-        else:
-            send_command("OFF")
+        cursor.execute("SELECT * FROM App_Keys WHERE key_id=%s", card_id)
+        result = cursor.fetchall()
+        for rec in result:
+            print(rec)
     ser_pause = False
 
 def ser_start_reading(ser):
@@ -46,4 +56,5 @@ try:
 except (KeyboardInterrupt, SystemExit):
     ser_pause = True
     serial_port.close()
+    connection.close()
     print "Keyboard interrupt."
