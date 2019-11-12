@@ -23,4 +23,5 @@ Libraries
 
 ## Copyright 
 Copyright (c) 2019 Junki Tomatsu
+
 MFRC522-python copyrights are used with the permission of mxgxw All rights reserved. 
