@@ -1,11 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 import threading
 import serial
 import time
 import datetime
 import MySQLdb
 
+import RPi.GPIO as GPIO
+import MFRC522
+
+continue_reading = True
+
 connection = MySQLdb.connect(
-    host='192.168.3.20', 
+    host='192.168.43.29',
     user='test', 
     passwd='TEST_PASSWD',
     db='guest_door'
@@ -18,14 +25,44 @@ ser_port = "/dev/serial0"
 ser_baud = 9600
 serial_port = serial.Serial(ser_port, ser_baud, timeout=0)
 
+Reader = MFRC522.MFRC522()
 close_countdown = 0
 close_working = False
 cool_dn = {}
+
+before_card = None
+two_time_no = False
+
+print "Guest Door - Ready"
+
+def reading():
+    global before_card
+    global two_time_no
+    while continue_reading:
+        (status, TagType) = Reader.MFRC522_Request(Reader.PICC_REQIDL)
+        (status, uid) = Reader.MFRC522_Anticoll()
+        if status == Reader.MI_OK:
+            two_time_no = False
+            if before_card != uid:
+                before_card = uid
+                rd_str = "READ_"
+                for uid_ in uid:
+                    uid_s = hex(uid_).replace("0x", "").upper()
+                    if len(uid_s) == 1:
+                        uid_s = "0" + uid_s
+                    rd_str = rd_str + uid_s
+                print rd_str # need to update. this is wrong with arduino result.
+        elif status == 2:
+            if two_time_no:
+                before_card = None
+            else:
+                two_time_no = True
 
 def isCoolTime(key_id):
     return cool_dn.has_key(key_id)
 
 def ser_received(data, isIn):
+    global ser_pause
     ser_pause = True
     if data.startswith("READ_"):
         card_id = data.replace("READ_", "")
@@ -107,6 +144,11 @@ try:
     thread = threading.Thread(target=ser_start_reading, args=(serial_port,))
     thread.daemon = True
     thread.start()
+    
+    r_thread = threading.Thread(target=reading, args=())
+    r_thread.daemon = True
+    r_thread.start()
+    
     while True:
         # Manual command input for development.
         command_in = raw_input("")
@@ -116,4 +158,6 @@ except (KeyboardInterrupt, SystemExit):
     ser_pause = True
     serial_port.close()
     connection.close()
+    continue_reading = False
+    GPIO.cleanup()
     print "Keyboard interrupt."
