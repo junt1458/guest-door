@@ -214,8 +214,6 @@ class SQL_Proc {
     }
 
     function deleteKey($user_id, $key_id) {
-        $user_list = array();
-
         $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
         if(mysqli_connect_errno()) {
             die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
@@ -241,8 +239,6 @@ class SQL_Proc {
     }
 
     function updatePermission($user_id, $permission) {
-        $user_list = array();
-
         $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
         if(mysqli_connect_errno()) {
             die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
@@ -386,6 +382,59 @@ class SQL_Proc {
         mysqli_close($link);
 
         return $user_list;
+    }
+
+    function toggleKeyStatus($key_, $user_) {
+        $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
+        if(mysqli_connect_errno()) {
+            die("データベースに接続できません。" . mysqli_connect_error() . PHP_EOL);
+            exit;
+        }
+
+        $user = mysqli_real_escape_string($link, $user_);
+        $key = mysqli_real_escape_string($link, $key_);      
+
+        $result = mysqli_query($link, "SELECT * FROM App_Keys WHERE user='" . $user . "' and key_name='" . $key . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+        
+        $upd = 0;
+        $st_id = 0;
+        $err = 0;
+        while($row = mysqli_fetch_assoc($result)) {
+            if (strtotime($row['active_until']) < time() || $row['use_count'] <= 0 && $row['use_count'] != -1) {
+                $err = 1;
+            }
+            if($row['paused']) {
+                $upd = 0;
+                $st_id = 5;
+            } else {
+                $upd = 1;
+                $st_id = 4;
+            }
+        }
+        if($err) {
+            mysqli_free_result($result);
+            mysqli_close($link);
+            return;
+        }
+
+        $result = mysqli_query($link, "UPDATE App_Keys SET paused=" . mysqli_real_escape_string($link, $upd) . " WHERE user='" . $user . "' and key_name='" . $key . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+
+        $result = mysqli_query($link, "INSERT INTO Logs (user, action, key_name) VALUES ('" . mysqli_real_escape_string($link, $_SESSION['user_id']) . "', " . $st_id . ", '" . $key . "');");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+        mysqli_free_result($result);
+
+        mysqli_close($link);
     }
 }
 ?>

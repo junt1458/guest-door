@@ -14,6 +14,8 @@
         header("Location: ./login.php");
         exit;
     }
+    
+    $key_list = $sql->getKeyList($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -72,19 +74,43 @@
     </nav>
 
     <main role="main" class="container">
-
         <div class="key_list">
+            <?php for($i = 0; $i < count($key_list); $i++) : ?>
             <div class="key_detail">
-                test
-            </div>
-            <div class="key_detail">
-                test
-            </div>
-            <div class="key_detail">
-                test
-            </div>
-        </div>
+                <h3><?php echo $key_list[$i]["name"]; ?></h3>
+                <h2>状態: <?php echo $key_list[$i]["status"]; ?></h2>
+                <?php if($key_list[$i]["active_until"] !== "2199-01-01 00:00:00") : ?>
+                    <h2><?php echo $key_list[$i]["active_until"]; ?> まで</h2>
+                <?php elseif($key_list[$i]["use_count"] !== "無制限") : ?>
+                    <h2>残り <?php echo $key_list[$i]["use_count"]; ?>回</h2>
+                <?php else : ?>
+                    <h2>無制限キー</h2>
+                <?php endif; ?>
+                <h2>種類: <?php echo $key_list[$i]["type"]; ?></h2>
 
+                <?php if($key_list[$i]["status"] === "使用可能" || $key_list[$i]["status"] === "使用中") : ?>
+                    <?php if($key_list[$i]["type"] === "仮想キー") : ?>
+                    <a href="./use.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-primary use-b">使用</a>
+                    <?php else : ?>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary disabled use-b">カードリーダーにかざしてください</a>
+                    <?php endif; ?>
+                    <a href="./stt.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-warning use-b">利用停止</a>
+                <?php elseif($key_list[$i]["status"] === "停止中") : ?>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary disabled use-b">利用停止中です</a>
+                    <a href="./stt.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-warning use-b">利用再開</a>
+                <?php else : ?>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary disabled use-b">このカードは無効です</a>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-warning disabled use-b">状態操作はできません</a>
+                <?php endif; ?>
+            </div>
+            <?php endfor; ?>
+        </div>
+        <?php if(count($key_list) == 0) : ?>
+        <div class="alert alert-danger" role="alert">
+            キーが登録されていません。<br>
+            管理者へお問い合わせください。
+        </div>
+        <?php endif; ?>
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
