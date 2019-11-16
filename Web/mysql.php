@@ -119,7 +119,7 @@ class SQL_Proc {
             exit;
         }
 
-        $level = 0;
+        $level = -1;
 
         while($row = mysqli_fetch_assoc($result)) {
             $level = intval($row['permission']);
@@ -203,6 +203,12 @@ class SQL_Proc {
         }
 
         $result = mysqli_query($link, "DELETE FROM Users WHERE user='" . mysqli_real_escape_string($link, $user_id) . "'");
+        if(!$result) {
+            die("クエリーに失敗しました。" . mysqli_error($link));
+            exit;
+        }
+        
+        $result = mysqli_query($link, "DELETE FROM App_Keys WHERE user='" . mysqli_real_escape_string($link, $user_id) . "'");
         if(!$result) {
             die("クエリーに失敗しました。" . mysqli_error($link));
             exit;

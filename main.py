@@ -153,9 +153,14 @@ try:
     r_thread.start()
     
     while True:
-        # Manual command input for development.
         command_in = raw_input("")
-        send_command(command_in)
+        if command_in.startswith("I_READ_"):
+            ser_received(command_in.replace("I_", ""), True):
+        elif command_in.startswith("O_READ_"):
+            ser_received(command_in.replace("O_", ""), False):
+        else:
+            # Manual command input for development.
+            send_command(command_in)
 
 except (KeyboardInterrupt, SystemExit):
     ser_pause = True

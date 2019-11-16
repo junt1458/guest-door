@@ -18,6 +18,11 @@
         $_GET['id'] = $_SESSION['user_id'];
     }
 
+    if($sql->getUserLevel($_GET['id']) == -1) {
+        header("Location: ./user.php");
+        exit;
+    }
+
     $failed = false;
     $message = "";
     if(!empty($_POST['key_name']) && !empty($_GET['id']) && !empty($_POST['key_type']) && !empty($_POST['key_restrict'])) {

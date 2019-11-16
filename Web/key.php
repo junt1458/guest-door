@@ -26,6 +26,11 @@
         $_GET['id'] = $_SESSION['user_id'];
     }
 
+    if($sql->getUserLevel($_GET['id']) == -1) {
+        header("Location: ./user.php");
+        exit;
+    }
+
     $key_list = $sql->getKeyList($_GET['id']);
 ?>
 

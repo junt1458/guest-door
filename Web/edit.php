@@ -27,6 +27,11 @@
 
     $ul = $sql->getUserLevel($_GET['id']);
 
+    if($ul == -1) {
+        header("Location: ./user.php");
+        exit;
+    }
+
     if(!empty($_POST['permission'])) {
         $new_perm = intval($_POST['permission']) - 1;
         if($new_perm < 0) {
