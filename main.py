@@ -28,7 +28,8 @@ serial_port = serial.Serial(ser_port, ser_baud, timeout=0)
 Reader = MFRC522.MFRC522()
 close_countdown = 0
 close_working = False
-cool_dn = {}
+cool_dn_i = {}
+cool_dn_o = {}
 
 before_card = None
 two_time_no = False
@@ -58,14 +59,18 @@ def reading():
             else:
                 two_time_no = True
 
-def isCoolTime(key_id):
-    return cool_dn.has_key(key_id)
+def isCoolTime(key_id, isIn):
+    if isIn:
+        return cool_dn_i.has_key(key_id)
+    else:
+        return cool_dn_o.has_key(key_id)
 
 def ser_received(data, isIn):
     global ser_pause
     ser_pause = True
     if data.startswith("READ_"):
         card_id = data.replace("READ_", "")
+        print "Card %s is detected." % card_id
         cursor.execute("SELECT * FROM App_Keys WHERE key_id='%s';" % card_id)
         result = cursor.fetchall()
         for rec in result:
@@ -78,7 +83,7 @@ def ser_received(data, isIn):
             use_comp = 1
             if isIn:
                 use_comp = 0
-            if paused is 0 and (using_key is use_comp or isCoolTime(rec[1])):
+            if paused is 0 and (using_key is use_comp or isCoolTime(rec[1], isIn)):
                 if count is -1 or count is not 0 and active_un > datetime.datetime.now():
                     action = "1"
                     using_k = "0"
@@ -93,30 +98,43 @@ def ser_received(data, isIn):
                         th.daemon = True
                         th.start()
                         send_command("ON")
-                    
-                    if isCoolTime(rec[1]) is False:
-                        global cool_dn
-                        cool_dn[rec[1]] = 10
-                        ct = threading.Thread(target=cool_del, args=(rec[1],))
+                    global cool_dn_i
+                    global cool_dn_o
+                    if isCoolTime(rec[1], isIn) is False:
+                        if isIn:
+                            cool_dn_i[rec[1]] = 10
+                        else:
+                            cool_dn_o[rec[1]] = 10
+                        ct = threading.Thread(target=cool_del, args=(rec[1],isIn,))
                         ct.daemon = True
                         ct.start()
                         new_ct = count - 1
-                        if count is not -1 and isIn is false:
-                            cursor.execute("UPDATE App_Keys SET use_count=" + new_ct + " WHERE key_id='" + rec[1] + "';")
+                        if count is not -1 and isIn is False:
+                            cursor.execute("UPDATE App_Keys SET use_count=" + str(new_ct) + " WHERE key_id='" + rec[1] + "';")
                         cursor.execute("INSERT INTO Logs (user, action, key_name) VALUES ('" + user + "', " + action + ", '" + key_n + "');")
                         cursor.execute("UPDATE App_Keys SET using_key=" + using_k + " WHERE key_id='" + rec[1] + "';")
                         connection.commit()
 
+
     ser_pause = False
 
-def cool_del(key_id):
-    global cool_dn
-    if key_id in cool_dn:
-        val = cool_dn[key_id]
-        while val > 0:
-            time.sleep(1)
-            val = val - 1
-        cool_dn.pop(key_id)
+def cool_del(key_id, isIn):
+    if isIn:
+        global cool_dn_i
+        if key_id in cool_dn_i:
+            val = cool_dn_i[key_id]
+            while val > 0:
+                time.sleep(1)
+                val = val - 1
+            cool_dn_i.pop(key_id)
+    else:
+        global cool_dn_o
+        if key_id in cool_dn_o:
+            val = cool_dn_o[key_id]
+            while val > 0:
+                time.sleep(1)
+                val = val - 1
+            cool_dn_o.pop(key_id)
 
 def close_ctdwn():
     global close_countdown
@@ -155,9 +173,9 @@ try:
     while True:
         command_in = raw_input("")
         if command_in.startswith("I_READ_"):
-            ser_received(command_in.replace("I_", ""), True):
+            ser_received(command_in.replace("I_", ""), True)
         elif command_in.startswith("O_READ_"):
-            ser_received(command_in.replace("O_", ""), False):
+            ser_received(command_in.replace("O_", ""), False)
         else:
             # Manual command input for development.
             send_command(command_in)
