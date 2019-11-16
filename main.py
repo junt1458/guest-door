@@ -100,6 +100,9 @@ def ser_received(data, isIn):
                         ct = threading.Thread(target=cool_del, args=(rec[1],))
                         ct.daemon = True
                         ct.start()
+                        new_ct = count - 1
+                        if count is not -1 and isIn is false:
+                            cursor.execute("UPDATE App_Keys SET use_count=" + new_ct + " WHERE key_id='" + rec[1] + "';")
                         cursor.execute("INSERT INTO Logs (user, action, key_name) VALUES ('" + user + "', " + action + ", '" + key_n + "');")
                         cursor.execute("UPDATE App_Keys SET using_key=" + using_k + " WHERE key_id='" + rec[1] + "';")
                         connection.commit()
