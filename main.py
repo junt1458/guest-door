@@ -6,11 +6,6 @@ import time
 import datetime
 import MySQLdb
 
-import RPi.GPIO as GPIO
-import MFRC522
-
-continue_reading = True
-
 connection = MySQLdb.connect(
     host='192.168.43.29',
     user='test', 
@@ -25,39 +20,12 @@ ser_port = "/dev/serial0"
 ser_baud = 9600
 serial_port = serial.Serial(ser_port, ser_baud, timeout=0)
 
-Reader = MFRC522.MFRC522()
 close_countdown = 0
 close_working = False
 cool_dn_i = {}
 cool_dn_o = {}
 
-before_card = None
-two_time_no = False
-
 print "Guest Door - Ready"
-
-def reading():
-    global before_card
-    global two_time_no
-    while continue_reading:
-        (status, TagType) = Reader.MFRC522_Request(Reader.PICC_REQIDL)
-        (status, uid) = Reader.MFRC522_Anticoll()
-        if status == Reader.MI_OK:
-            two_time_no = False
-            if before_card != uid:
-                before_card = uid
-                rd_str = "READ_"
-                for uid_ in uid:
-                    uid_s = hex(uid_).replace("0x", "").upper()
-                    if len(uid_s) == 1:
-                        uid_s = "0" + uid_s
-                    rd_str = rd_str + uid_s
-                print rd_str # need to update. this is wrong with arduino result.
-        elif status == 2:
-            if two_time_no:
-                before_card = None
-            else:
-                two_time_no = True
 
 def isCoolTime(key_id, isIn):
     if isIn:
@@ -153,7 +121,10 @@ def ser_start_reading(ser):
             time.sleep(0.1)
             received = ser.readline()
             if received is not "":
-                ser_received(received, True)
+                if received.startswith("I_READ_"):
+                    ser_received(received.replace("I_", ""), True)
+                elif received.startswith("O_READ_"):
+                    ser_received(received.replace("O_", ""), False)
 
 def send_command(cmd):
     send = cmd + '\n'
@@ -165,10 +136,6 @@ try:
     thread = threading.Thread(target=ser_start_reading, args=(serial_port,))
     thread.daemon = True
     thread.start()
-    
-    r_thread = threading.Thread(target=reading, args=())
-    r_thread.daemon = True
-    r_thread.start()
     
     while True:
         command_in = raw_input("")
@@ -182,8 +149,5 @@ try:
 
 except (KeyboardInterrupt, SystemExit):
     ser_pause = True
-    serial_port.close()
     connection.close()
-    continue_reading = False
-    GPIO.cleanup()
     print "Keyboard interrupt."

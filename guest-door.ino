@@ -3,8 +3,10 @@
 
 #define RST_PIN         9
 #define SS_PIN          10
+#define SS2_PIN          8
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
+MFRC522 mfrc522_2(SS2_PIN, RST_PIN);
 
 void setup() {
   pinMode(5, OUTPUT);
@@ -15,6 +17,7 @@ void setup() {
   while (!Serial);
   SPI.begin();
   mfrc522.PCD_Init();
+  mfrc522_2.PCD_Init();
   delay(4);
 }
 
@@ -62,23 +65,41 @@ void loop() {
   }
 
   if(wait == 10) {
-    if (!mfrc522.PICC_IsNewCardPresent()) return;
-    if (!mfrc522.PICC_ReadCardSerial()) return;
-    
-    String ubuf = "";
-    String uid = "";
-    for (byte i = 0; i < mfrc522.uid.size; i++) {
-      ubuf =  String(mfrc522.uid.uidByte[i], HEX);
-      if(ubuf.length() == 1){
-        ubuf = "0" + ubuf;
+    if(mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+      String ubuf = "";
+      String uid = "";
+      for (byte i = 0; i < mfrc522.uid.size; i++) {
+        ubuf =  String(mfrc522.uid.uidByte[i], HEX);
+        if(ubuf.length() == 1){
+          ubuf = "0" + ubuf;
+        }
+        uid += ubuf;
       }
-      uid += ubuf;
+      uid.toUpperCase();
+      mfrc522.PICC_HaltA();
+      
+      Serial.print("I_READ_" + uid);
+      wait = 0;
     }
-    uid.toUpperCase();
-    mfrc522.PICC_HaltA();
     
-    Serial.print("READ_" + uid);
-    wait = 0;
+    if(mfrc522_2.PICC_IsNewCardPresent() && mfrc522_2.PICC_ReadCardSerial()) {
+      String ubuf = "";
+      String uid = "";
+      for (byte i = 0; i < mfrc522_2.uid.size; i++) {
+        ubuf =  String(mfrc522_2.uid.uidByte[i], HEX);
+        if(ubuf.length() == 1){
+          ubuf = "0" + ubuf;
+        }
+        uid += ubuf;
+      }
+      uid.toUpperCase();
+      mfrc522_2.PICC_HaltA();
+      
+      Serial.print("O_READ_" + uid);
+      wait = 0;
+    }
+    
+    if (wait == 10) return;
   }
   delay(100);
   wait++;
