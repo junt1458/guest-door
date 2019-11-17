@@ -27,7 +27,7 @@
     $message = "";
     if(!empty($_POST['key_name']) && !empty($_GET['id']) && !empty($_POST['key_type']) && !empty($_POST['key_restrict'])) {
         $key_type = 1;
-        $key_id = "N/A";
+        $key_id = $sql->makeRandStr(40);
         $key_until = "2199/1/1 00:00:00";
         $key_count = -1;
 

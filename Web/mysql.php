@@ -20,6 +20,20 @@ class SQL_Proc {
         return "guest_door";
     }
 
+    /**
+     * ランダム文字列生成 (英数字)
+     * https://qiita.com/TetsuTaka/items/bb020642e75458217b8a
+     * $length: 生成する文字数
+     */
+    function makeRandStr($length) {
+        $str = array_merge(range('0', '9'), range('A', 'Z'));
+        $r_str = null;
+        for ($i = 0; $i < $length; $i++) {
+            $r_str .= $str[rand(0, count($str) - 1)];
+        }
+        return $r_str;
+    }
+    
     function isLogin() {
         $link = mysqli_connect($this->host() . ":" . $this->port(), $this->user(), $this->pass(), $this->db());
         if(mysqli_connect_errno()) {
@@ -322,6 +336,7 @@ class SQL_Proc {
             }
             $data = array(
                 "name"=>$row['key_name'],
+                "kid"=>$row['key_id'],
                 "created_at"=>$row['created_at'],
                 "use_count"=>(($row['use_count'] == -1) ? "無制限" : $row['use_count']),
                 "active_until"=>$row['active_until'],

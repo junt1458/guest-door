@@ -7,7 +7,7 @@ import datetime
 import MySQLdb
 
 connection = MySQLdb.connect(
-    host='192.168.43.29',
+    host='127.0.0.1',
     user='test', 
     passwd='TEST_PASSWD',
     db='guest_door'

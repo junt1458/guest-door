@@ -19,9 +19,6 @@ Software
 Libraries
 - [MFRC522](https://github.com/miguelbalboa/rfid) 1.4.5
 - [SPI-Py](https://github.com/lthiery/SPI-Py)
-- [MFRC522-python](https://github.com/mxgxw/MFRC522-python)
 
 ## Copyright 
 Copyright (c) 2019 Junki Tomatsu
-
-MFRC522-python copyrights are used with the permission of mxgxw All rights reserved. 

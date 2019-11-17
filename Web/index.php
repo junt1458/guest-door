@@ -88,9 +88,16 @@
                 <?php endif; ?>
                 <h2>種類: <?php echo $key_list[$i]["type"]; ?></h2>
 
-                <?php if($key_list[$i]["status"] === "使用可能" || $key_list[$i]["status"] === "使用中") : ?>
+                <?php if($key_list[$i]["status"] === "使用可能") : ?>
                     <?php if($key_list[$i]["type"] === "仮想キー") : ?>
-                    <a href="./use.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-primary use-b">使用</a>
+                    <a href="./use.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-primary use-b">入室</a>
+                    <?php else : ?>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary disabled use-b">カードリーダーにかざしてください</a>
+                    <?php endif; ?>
+                    <a href="./stt.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-warning use-b">利用停止</a>
+                <?php elseif($key_list[$i]["status"] === "使用中") :?>
+                    <?php if($key_list[$i]["type"] === "仮想キー") : ?>
+                    <a href="./use.php?key=<?php echo $key_list[$i]["name"]; ?>" class="btn btn-sm btn-primary use-b">退室</a>
                     <?php else : ?>
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary disabled use-b">カードリーダーにかざしてください</a>
                     <?php endif; ?>
