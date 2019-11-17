@@ -9,7 +9,7 @@ class SQL_Proc {
     }
 
     function user() {
-        return "root";
+        return "test";
     }
 
     function pass() {
@@ -314,7 +314,7 @@ class SQL_Proc {
             if($row['use_count'] <= 0 && $row['use_count'] != -1) {
                 $status = "無効";
             }
-            if(strtotime($row['active_until']) < time()) {
+            if(date_create_from_format("Y-m-d G:i:s", $row['active_until'])->format('U') < time()) {
                 $status = "無効";
             }
             if($row['using_key']) {
@@ -410,7 +410,7 @@ class SQL_Proc {
         $st_id = 0;
         $err = 0;
         while($row = mysqli_fetch_assoc($result)) {
-            if (strtotime($row['active_until']) < time() || $row['use_count'] <= 0 && $row['use_count'] != -1) {
+            if (date_create_from_format("Y-m-d G:i:s", $row['active_until'])->format('U') < time() || $row['use_count'] <= 0 && $row['use_count'] != -1) {
                 $err = 1;
             }
             if($row['paused']) {
